@@ -52,7 +52,7 @@ class ParkingController {
 
   // assuming this in int numbers
   calculateFees(entryTime, exitTime) {
-    if (exitTime < entryTime) {
+    if (exitTime <= entryTime) {
       const firstChunk = this.calculateChunk(entryTime, 24);
       const secondChunk = this.calculateChunk(0, exitTime);
       this.fees = firstChunk + secondChunk;
@@ -106,7 +106,7 @@ const main = () => {
 
   const parkingController = new ParkingController();
 
-  const fees = parkingController.calculateFees(23, 7);
+  const fees = parkingController.calculateFees(23, 23);
 
   console.log(fees);
 };
