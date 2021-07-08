@@ -10,10 +10,13 @@ class Park {
   }
 
   enter(vehicle) {
-    if (this.canEnter()) {
+    if (this.canEnter() && !this.vehicles.includes(vehicle)) {
+      console.log(`Vehicle ${vehicle.plate} has entered the park`);
       this.vehicles.push(vehicle);
     } else {
-      console.log(`This ${vehicle.plate} cannot enter now max capicity`);
+      console.log(
+        `This ${vehicle.plate} cannot enter now max capicity or entered before`
+      );
     }
   }
 
@@ -49,14 +52,16 @@ class ParkingController {
   //          ● Parking is free from Midnight to 6am
 
   // hours are in 24 format (1 pm is 13)
-  exit(entryTime, exitTime) {
-    let fees = 0;
+
+  fees = 0;
+
+  calculateFees(entryTime, exitTime) {
     for (let hour = entryTime; hour < exitTime; hour++) {
-      if (hour >= 6 && hour <= 10) fees += 3;
-      if ((hour >= 10) & (hour <= 24)) fees += 1;
+      if (hour >= 6 && hour <= 10) this.fees += 3;
+      if (hour >= 10 && hour <= 24) this.fees += 1;
     }
 
-    return fees;
+    return this.fees;
   }
 }
 
@@ -72,16 +77,18 @@ const main = () => {
 
   park.enter(vehicleX);
 
-  // we should validate that vehicle can not enter the park twice
   park.enter(vehicleX);
   park.enter(vehicleX);
   park.enter(vehicleX);
 
-  console.log(park.numberOfVehicles());
+  console.log(
+    park.numberOfVehicles(),
+    " number of vehicles now inside the park"
+  );
 
   const parkingController = new ParkingController();
 
-  const fees = parkingController.exit(10, 15);
+  const fees = parkingController.calculateFees(10, 15);
 
   console.log(fees);
 };
