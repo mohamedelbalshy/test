@@ -21,7 +21,11 @@ class Park {
   }
 
   exit(vehicleExit) {
-    this.vehicle.filter((vehicle) => vehicle.plate !== vehicleExit.plate);
+    this.vehicles = this.vehicles.filter(
+      (vehicle) => vehicle.plate !== vehicleExit.plate
+    );
+
+    console.log(`Vehicle ${vehicleExit.plate} exit from park`);
   }
 
   canEnter() {
@@ -38,16 +42,7 @@ class Vehicle {
 }
 
 class ParkingController {
-  /// Determines if a vehicle can enter or not. Also,
-  /// includes the implementation to store the vehicle
-  /// entering the parking system
-  ///
-  /// - Parameters:
-  /// - vehicle: entering vehicle
-  /// - entryTime: time in Int when the vehicle tries to enter
-  /// - Returns: whether the vehicle can enter or not
-
-  //         $3 from 6am to 10am
+  //          ● $3 from 6am to 10am
   //          ● $1 from 10am to Midnight.
   //          ● Parking is free from Midnight to 6am
 
@@ -55,13 +50,27 @@ class ParkingController {
 
   fees = 0;
 
+  // assuming this in int numbers
   calculateFees(entryTime, exitTime) {
-    for (let hour = entryTime; hour < exitTime; hour++) {
-      if (hour >= 6 && hour <= 10) this.fees += 3;
-      if (hour >= 10 && hour <= 24) this.fees += 1;
+    if (exitTime < entryTime) {
+      const firstChunk = this.calculateChunk(entryTime, 24);
+      const secondChunk = this.calculateChunk(0, exitTime);
+      this.fees = firstChunk + secondChunk;
+    } else {
+      this.fees = this.calculateChunk(entryTime, exitTime);
     }
 
     return this.fees;
+  }
+
+  calculateChunk(entryTime, exitTime) {
+    let chunkFees = 0;
+    for (let hour = entryTime; hour < exitTime; hour++) {
+      if (hour >= 6 && hour <= 10) chunkFees += 3;
+      if (hour >= 10 && hour <= 24) chunkFees += 1;
+    }
+
+    return chunkFees;
   }
 }
 
@@ -77,9 +86,18 @@ const main = () => {
 
   park.enter(vehicleX);
 
+  park.exit(vehicleX);
   park.enter(vehicleX);
+  park.exit(vehicleX);
   park.enter(vehicleX);
+  park.exit(vehicleX);
   park.enter(vehicleX);
+
+  const vehicleXY = new Vehicle("XY");
+
+  park.enter(vehicleXY);
+
+  park.enter(vehicleXY);
 
   console.log(
     park.numberOfVehicles(),
@@ -88,7 +106,7 @@ const main = () => {
 
   const parkingController = new ParkingController();
 
-  const fees = parkingController.calculateFees(10, 15);
+  const fees = parkingController.calculateFees(23, 7);
 
   console.log(fees);
 };
